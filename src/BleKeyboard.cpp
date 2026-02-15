@@ -98,7 +98,7 @@ void BleKeyboard::begin(void)
   NimBLEServer *pServer = NimBLEDevice::createServer();
   pServer->setCallbacks(this);
 
-  hid        = new NimBLEHIDDevice(pServer);
+  hid = new NimBLEHIDDevice(pServer);
   inputKeyboard = hid->getInputReport(KEYBOARD_ID); // <-- input REPORTID from report map
   outputKeyboard = hid->getOutputReport(KEYBOARD_ID);
   inputMediaKeys = hid->getInputReport(MEDIA_KEYS_ID);
@@ -111,6 +111,7 @@ void BleKeyboard::begin(void)
   hid->startServices();
 
   NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
+	pAdvertising->setName(deviceName);
   pAdvertising->setAppearance(HID_KEYBOARD);
   pAdvertising->addServiceUUID(hid->getHidService()->getUUID());
   pAdvertising->start();
@@ -119,6 +120,13 @@ void BleKeyboard::begin(void)
 
 void BleKeyboard::end(void)
 {
+	if (hid != nullptr) {
+		delete hid;
+		hid = nullptr;
+		inputKeyboard = nullptr;
+		outputKeyboard = nullptr;
+		inputMediaKeys = nullptr;
+	}
 }
 
 bool BleKeyboard::isConnected(void) const {
